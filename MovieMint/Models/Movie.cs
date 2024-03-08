@@ -26,8 +26,7 @@ namespace MovieMint.Models
         public int ReleasedYear { get; set; }
 
         [Required]
-        [RegularExpression(@"^\d+ min$")]
-        public string Runtime { get; set; } = null!;
+        public int Runtime { get; set; }
 
         [Required]
         [Range(0, 10)]
@@ -50,7 +49,7 @@ namespace MovieMint.Models
         public DateTime CreatedDate { get; set; }
 
         [Required]
-        public DateTime? LastUpdatedDate { get;set; }
+        public DateTime LastUpdatedDate { get;set; }
 
         public int? CertificateId { get; set; }
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieMint.Models;
 
@@ -11,9 +12,11 @@ using MovieMint.Models;
 namespace MovieMint.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240307211800_updataDirectorNameMax")]
+    partial class updataDirectorNameMax
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,7 +123,8 @@ namespace MovieMint.Migrations
                     b.Property<decimal>("IMDBRating")
                         .HasColumnType("decimal(2, 1)");
 
-                    b.Property<DateTime>("LastUpdatedDate")
+                    b.Property<DateTime?>("LastUpdatedDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("MetaScore")
@@ -141,8 +145,9 @@ namespace MovieMint.Migrations
                     b.Property<int>("ReleasedYear")
                         .HasColumnType("int");
 
-                    b.Property<int>("Runtime")
-                        .HasColumnType("int");
+                    b.Property<string>("Runtime")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SeriesTitle")
                         .IsRequired()
@@ -211,8 +216,8 @@ namespace MovieMint.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
 
                     b.HasKey("Id");
 
