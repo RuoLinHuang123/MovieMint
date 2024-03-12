@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MovieMint.Constants;
 using MovieMint.DTO;
 using MovieMint.Models;
 using System.Linq.Dynamic.Core;
@@ -84,6 +86,7 @@ namespace MovieMint.Controllers
             };
         }
 
+        [Authorize(Roles = RoleNames.Administrator)]
         [HttpDelete(Name = "DeleteCertificate")]
         public async Task<RestDTO<Certificate?>> Delete(int id)
         {

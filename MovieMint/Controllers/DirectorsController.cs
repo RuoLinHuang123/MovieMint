@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using MovieMint.DTO;
 using MovieMint.Models;
+using Microsoft.AspNetCore.Authorization;
+using MovieMint.Constants;
 
 namespace MovieMint.Controllers
 {
@@ -86,6 +88,7 @@ namespace MovieMint.Controllers
             };
         }
 
+        [Authorize(Roles = RoleNames.Administrator)]
         [HttpDelete(Name = "DeleteDirector")]
         public async Task<RestDTO<Director?>> Delete(int id)
         {

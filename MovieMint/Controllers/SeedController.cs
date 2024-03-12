@@ -1,7 +1,9 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MovieMint.Constants;
 using MovieMint.Models;
 using MovieMint.Models.CSV;
 using System.Globalization;
@@ -9,7 +11,7 @@ using System.Globalization;
 
 namespace MovieMint.Controllers
 {
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     [ApiController]
     public class SeedController : Controller
     {
@@ -19,19 +21,27 @@ namespace MovieMint.Controllers
 
         private readonly ILogger<SeedController> _logger;
 
+        private readonly RoleManager<IdentityRole> _roleManager;
+
+        private readonly UserManager<ApiUser> _userManager;
+
         public SeedController(
             ApplicationDbContext context,
             IWebHostEnvironment env,
-            ILogger<SeedController> logger)
+            ILogger<SeedController> logger,
+            RoleManager<IdentityRole> roleManager,
+            UserManager<ApiUser> userManager)
         {
             _context = context;
             _env = env;
             _logger = logger;
+            _roleManager = roleManager;
+            _userManager = userManager;
         }
 
-        [HttpPut(Name = "Seed")]
+        [HttpPut]
         [ResponseCache(NoStore = true)]
-        public async Task<IActionResult> Put()
+        public async Task<IActionResult> MovieData()
         {
             var config = new CsvConfiguration(CultureInfo.GetCultureInfo("en-US"))
             {
@@ -180,6 +190,57 @@ namespace MovieMint.Controllers
                 Stars = _context.Stars.Count(),
                 SkippedRows = skippedRows
             });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AuthData()
+        {
+            int rolesCreated = 0;
+            int usersAddedToRoles = 0;
+
+            if (!await _roleManager.RoleExistsAsync(RoleNames.NormalUser))
+            {
+                await _roleManager.CreateAsync(
+                    new IdentityRole(RoleNames.NormalUser));
+                rolesCreated++;
+            }
+
+            if (!await _roleManager.RoleExistsAsync(RoleNames.Administrator))
+            {
+                await _roleManager.CreateAsync(
+                    new IdentityRole(RoleNames.Administrator));
+                rolesCreated++;
+            }
+
+            var testNormalUser = await _userManager
+                .FindByNameAsync("TestNormalUser");
+            if (testNormalUser != null
+                && !await _userManager.IsInRoleAsync(
+                    testNormalUser, RoleNames.NormalUser))
+            {
+                await _userManager.AddToRoleAsync(testNormalUser, RoleNames.NormalUser);
+                usersAddedToRoles++;
+            }
+
+            var testAdministrator = await _userManager
+                .FindByNameAsync("TestAdministrator");
+            if (testAdministrator != null
+                && !await _userManager.IsInRoleAsync(
+                    testAdministrator, RoleNames.Administrator))
+            {
+                await _userManager.AddToRoleAsync(
+                    testAdministrator, RoleNames.NormalUser);
+                await _userManager.AddToRoleAsync(
+                    testAdministrator, RoleNames.Administrator);
+                usersAddedToRoles++;
+            }
+
+            return new JsonResult(new
+            {
+                RolesCreated = rolesCreated,
+                UsersAddedToRoles = usersAddedToRoles
+            });
+
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.IO;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 
 namespace MovieMint.Models
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApiUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

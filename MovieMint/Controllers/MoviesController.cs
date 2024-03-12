@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MovieMint.Constants;
 using MovieMint.DTO;
 using MovieMint.Models;
 using System.Linq.Dynamic.Core;
@@ -24,7 +26,7 @@ namespace MovieMint.Controllers
             _context = context;
             _logger = logger;
         }
-
+        
         [HttpGet(Name = "GetMovies")]
         public async Task<RestDTO<Movie[]>> Get(
                 [FromQuery] RequestDTO<MovieDTO> input
@@ -103,6 +105,7 @@ namespace MovieMint.Controllers
             };
         }
 
+        [Authorize(Roles = RoleNames.Administrator)]
         [HttpDelete(Name = "DeleteMovie")]
         public async Task<RestDTO<Movie?>> Delete(int id)
         {
